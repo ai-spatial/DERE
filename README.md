@@ -16,10 +16,10 @@ DERE addresses this challenge through a **decomposition-and-resembling** design.
 * Knowledge-guided decomposition-and-resembling framework
 * Integration of process-based simulations, remote sensing labels, and in-situ observations
 * High-level remote sensing supervision for bottom-up sub-processes
-* Probabilistic label expansion for sparse in-situ flux measurements
-* Uncertainty-aware finetuning with imputed observations
-* Baseline and KGML implementations for Transformer and Informer
-* Additional comparison models including FEDformer, iTransformer, TimeXer, and SimpleTM
+* CSDI-based probabilistic label expansion for sparse in-situ flux observations
+* Uncertainty-aware fine-tuning with imputed observations
+* Baseline and KGML implementations across multiple time-series backbones
+* Comparison models including Transformer, Informer, FEDformer, iTransformer, TimeXer, and SimpleTM
 
 ## 📁 Code Organization
 
@@ -128,20 +128,21 @@ The in-situ flux observations are based on public carbon flux benchmark datasets
 Due to data size and data-sharing considerations, processed datasets are not included in this repository. Please refer to the paper for detailed data sources, preprocessing procedures, and citations. Before running the experiments, please prepare the required data and update the data paths in the corresponding scripts.
 
 
+
 ## 📚 Citation
 
 If you find this repository useful, please cite:
 
 ```bibtex
-@inproceedings{xu2026dere,
+@inproceedings{xu2026knowledge,
+  author    = {Shuo Xu and Zhihao Wang and Ruohan Li and Ruichen Wang and Lei Ma and George C. Hurtt and Xiaowei Jia and Yiqun Xie},
   title     = {Knowledge-Guided Learning for Global Carbon Flux Prediction: Integrating High-Level Remote Sensing with Bottom-Up Physical Modeling},
-  author    = {Xu, Shuo and Wang, Zhihao and Li, Ruohan and Wang, Ruichen and Ma, Lei and Hurtt, George C. and Jia, Xiaowei and Xie, Yiqun},
-  booktitle = {Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining},
-  year      = {2026}
+  booktitle = {Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2},
+  year      = {2026},
+  address   = {Jeju Island, Republic of Korea},
+  publisher = {ACM},
+  doi       = {10.1145/3770855.3818927}
 }
-```
-
-Will update the citation once the official proceedings information is available.
 
 
 ## 📬 Contact
