@@ -147,9 +147,8 @@ If you find this repository useful, please cite:
 
 ## 📬 Contact
 
-For questions, please contact:
+For questions or feedback, feel free to reach out:
 
-**Shuo Xu** — [shuoxu98@umd.edu](mailto:shuoxu98@umd.edu)  
-
-**Yiqun Xie** — [xie@umd.edu](mailto:xie@umd.edu)
+- **Shuo Xu** — [shuoxu98@umd.edu](mailto:shuoxu98@umd.edu)
+- **Yiqun Xie** — [xie@umd.edu](mailto:xie@umd.edu)
 
