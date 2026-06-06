@@ -125,8 +125,7 @@ The experiments use publicly available data sources, including in-situ carbon fl
 
 The in-situ flux observations are based on public carbon flux benchmark datasets such as CarbonSense. The process-based model data include input conditions and simulation outputs from CarbonGlobe. The high-level remote sensing labels are derived from ESA CCI plant functional type products.
 
-Due to data size and data-sharing considerations, processed datasets are not included in this repository. Please refer to the paper for detailed data sources, preprocessing procedures, and citations. Before running the experiments, please prepare the required data and update the data paths in the corresponding scripts.
-
+Due to data size and data-sharing considerations, processed datasets are not included in this repository. Please refer to the paper for detailed data sources, preprocessing procedures, and citations. Before running the experiments, please update the default data paths in the scripts, such as `Dataset/DeepED_dataset`, according to your local data location.
 
 ## 📚 Citation
 
