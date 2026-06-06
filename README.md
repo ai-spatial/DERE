@@ -149,5 +149,7 @@ If you find this repository useful, please cite:
 
 For questions, please contact:
 
-**Shuo Xu** — [shuoxu98@umd.edu](mailto:shuoxu98@umd.edu)
+```markdown
+**Shuo Xu** — [shuoxu98@umd.edu](mailto:shuoxu98@umd.edu)  
 **Yiqun Xie** — [xie@umd.edu](mailto:xie@umd.edu)
+```
