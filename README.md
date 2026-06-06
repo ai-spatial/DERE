@@ -131,9 +131,11 @@ Additional dependencies may be required by specific comparison models or the CSD
 
 ## Data
 
-The data used in this study include simulation data, remote-sensing-derived variables, and in-situ flux observations from multiple flux networks. Due to data size and/or data-sharing restrictions, the processed datasets are not included in this repository.
+The data used in this study are from publicly available sources, including in-situ carbon flux observations, process-based model simulations, and remote-sensing-derived plant functional type (PFT) labels.
 
-Please prepare the required data and update the data paths in the corresponding scripts before running the experiments.
+Specifically, the in-situ flux observations are based on public carbon flux benchmark datasets such as CarbonSense. The process-based model data include input conditions and simulation outputs from CarbonGlobe, which focuses on physical model emulation. The remote-sensing-derived PFT labels are obtained from ESA CCI products. Please refer to the paper for detailed descriptions of the datasets, preprocessing procedures, and citations.
+
+Due to data size and data-sharing considerations, the processed datasets are not directly included in this repository. Users should download the original datasets from the corresponding public sources and update the data paths in the scripts before running the experiments.
 
 ## Usage
 
