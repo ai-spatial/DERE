@@ -27,7 +27,7 @@ DERE addresses this challenge through a **decomposition-and-resembling** design.
 DERE/
 ├── README.md
 ├── .gitignore
-├── DERE-main/                         # Main DERE pipeline and Transformer/Informer baselines
+├── DERE-main/                         # Main DERE pipeline and Transformer/Informer experiments
 │   ├── 01_Baseline_Informer.py
 │   ├── 01_Baseline_Transformer.py
 │   ├── 02_KGML_Informer.py
@@ -42,8 +42,8 @@ DERE/
 │   ├── exp/
 │   ├── models/
 │   └── utils/
-├── FEDformer_iTransformer_TimeXer/    # FEDformer, iTransformer, and TimeXer baselines
-└── SimpleTM/                          # SimpleTM baseline
+├── FEDformer_iTransformer_TimeXer/    # FEDformer, iTransformer, and TimeXer experiments
+└── SimpleTM/                          # SimpleTM experiments
 ```
 
 The main code for DERE is located in **`DERE-main/`**. This folder contains the proposed DERE pipeline, Transformer/Informer baselines, KGML variants, model definitions, experiment scripts, and utility functions.
