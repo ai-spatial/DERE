@@ -1,18 +1,27 @@
-# DERE: Decomposition-and-Resembling for Global Carbon Flux Prediction
+# 🌍 DERE: Decomposition-and-Resembling for Global Carbon Flux Prediction
 
-This repository provides the implementation of **DERE**, a knowledge-guided learning framework for global carbon flux prediction. The method integrates simulation data, remote-sensing-derived variables, and in-situ flux observations to predict carbon flux variables, including **GPP**, **RECO**, and **NEE**.
-
-This code accompanies the paper:
-
+Code for the accepted paper at the KDD AI4Science Track:
 > **Knowledge-Guided Learning for Global Carbon Flux Prediction: Integrating High-Level Remote Sensing with Bottom-Up Physical Modeling**
 
-## Overview
+DERE is a knowledge-guided learning framework for global carbon flux prediction. It integrates process-based model simulations, high-level remote sensing observations, and in-situ flux measurements to predict carbon flux variables, including **GPP**, **RECO**, and **NEE**.
 
-DERE is designed to improve carbon flux prediction by combining high-level observational data with bottom-up physical modeling. The framework decomposes carbon flux prediction into physically meaningful components and then resembles them to produce final flux estimates. It also uses probabilistic label expansion and uncertainty-aware finetuning to better leverage sparse in-situ carbon flux observations.
+## 🧩 Overview
 
-The repository includes the full DERE pipeline and several comparison models used in the paper.
+Process-based ecosystem models provide important physical knowledge for carbon flux prediction, but they often have limited flexibility to directly incorporate increasingly available observations. In particular, high-level remote sensing observations, such as aggregated plant functional type information, cannot be directly matched with bottom-up sub-processes in ecosystem models.
 
-## Code Organization
+DERE addresses this challenge through a **decomposition-and-resembling** design. It first decomposes simulation outputs into physically meaningful intermediate components, and then resembles them with high-level remote sensing labels and sparse in-situ observations. The framework further uses probabilistic label expansion and uncertainty-aware finetuning to improve the use of sparse carbon flux measurements.
+
+## 🚀 Features
+
+* Knowledge-guided decomposition-and-resembling framework
+* Integration of process-based simulations, remote sensing labels, and in-situ observations
+* High-level remote sensing supervision for bottom-up sub-processes
+* Probabilistic label expansion for sparse in-situ flux measurements
+* Uncertainty-aware finetuning with imputed observations
+* Baseline and KGML implementations for Transformer and Informer
+* Additional comparison models including FEDformer, iTransformer, TimeXer, and SimpleTM
+
+## 📁 Code Organization
 
 ```text
 DERE/
@@ -36,11 +45,13 @@ DERE/
 └── README.md
 ```
 
-The main code for the proposed method is located in **`DERE-main/`**. It implements the complete DERE framework, including sequential steps from pre-training to in-situ finetuning and imputation-enhanced finetuning.
+The main code for DERE is located in **`DERE-main/`**. This folder contains the proposed DERE pipeline, Transformer/Informer baselines, KGML variants, model definitions, experiment scripts, and utility functions.
 
-## DERE Pipeline
+The folders **`FEDformer_iTransformer_TimeXer/`** and **`SimpleTM/`** contain additional comparison models used in the paper.
 
-The full DERE workflow is organized as follows:
+## 🔬 DERE Pipeline
+
+The proposed DERE framework is implemented as a sequential pipeline:
 
 1. **Train pure component models and the competition model**
 
@@ -54,19 +65,19 @@ The full DERE workflow is organized as follows:
    DERE-main/Step02_DERE_Finetune_CompetitionModel.py
    ```
 
-3. **Train the PFT-specific model**
+3. **Train the PFT model using high-level remote sensing labels**
 
    ```text
    DERE-main/Step03_DERE_Train_PFTModel.py
    ```
 
-4. **Finetune with in-situ observations**
+4. **Finetune with in-situ carbon flux observations**
 
    ```text
    DERE-main/Step04_DERE_Finetune_with_InSitu.py
    ```
 
-5. **Perform CSDI-based in-situ imputation**
+5. **Perform CSDI-based in-situ label imputation**
 
    ```text
    DERE-main/Step05_DERE_InSitu_imputation_CSDI-main/
@@ -78,26 +89,26 @@ The full DERE workflow is organized as follows:
    DERE-main/Step06_DERE_Finetune_with_InSitu_imputation.py
    ```
 
-## Comparison Models
+## 🧠 Comparison Models
 
-The repository also includes comparison models used in the paper.
+The repository includes the baseline and KGML models used in the paper.
 
 | Model        | Location                          |
 | ------------ | --------------------------------- |
-| Informer     | `DERE-main/`                      |
 | Transformer  | `DERE-main/`                      |
+| Informer     | `DERE-main/`                      |
 | FEDformer    | `FEDformer_iTransformer_TimeXer/` |
 | iTransformer | `FEDformer_iTransformer_TimeXer/` |
 | TimeXer      | `FEDformer_iTransformer_TimeXer/` |
 | SimpleTM     | `SimpleTM/`                       |
 
-Example baseline and KGML scripts include:
+Example scripts include:
 
 ```text
-DERE-main/01_Baseline_Informer.py
 DERE-main/01_Baseline_Transformer.py
-DERE-main/02_KGML_Informer.py
+DERE-main/01_Baseline_Informer.py
 DERE-main/02_KGML_Transformer.py
+DERE-main/02_KGML_Informer.py
 FEDformer_iTransformer_TimeXer/01_Baseline_FEDformer.py
 FEDformer_iTransformer_TimeXer/01_Baseline_iTransformer.py
 FEDformer_iTransformer_TimeXer/01_Baseline_TimeXer.py
@@ -108,68 +119,18 @@ SimpleTM/01_Baseline_SimpleTM.py
 SimpleTM/02_KGML_SimpleTM.py
 ```
 
-## Requirements
+## 📊 Data
 
-The code is implemented in Python with PyTorch. The main dependencies include:
+The experiments use publicly available data sources, including in-situ carbon flux observations, process-based model simulations, and remote-sensing-derived plant functional type labels.
 
-```text
-python
-pytorch
-numpy
-pandas
-scikit-learn
-matplotlib
-pyyaml
-tqdm
-scipy
-sympy
-einops
-pywavelets
-```
+The in-situ flux observations are based on public carbon flux benchmark datasets such as CarbonSense. The process-based model data include input conditions and simulation outputs from CarbonGlobe. The high-level remote sensing labels are derived from ESA CCI plant functional type products.
 
-Additional dependencies may be required by specific comparison models or the CSDI-based imputation module.
+Due to data size and data-sharing considerations, processed datasets are not included in this repository. Please refer to the paper for detailed data sources, preprocessing procedures, and citations. Before running the experiments, please prepare the required data and update the data paths in the corresponding scripts.
 
-## Data
 
-The data used in this study are from publicly available sources, including in-situ carbon flux observations, process-based model simulations, and remote-sensing-derived plant functional type (PFT) labels.
+## 📚 Citation
 
-Specifically, the in-situ flux observations are based on public carbon flux benchmark datasets such as CarbonSense. The process-based model data include input conditions and simulation outputs from CarbonGlobe, which focuses on physical model emulation. The remote-sensing-derived PFT labels are obtained from ESA CCI products. Please refer to the paper for detailed descriptions of the datasets, preprocessing procedures, and citations.
-
-Due to data size and data-sharing considerations, the processed datasets are not directly included in this repository. Users should download the original datasets from the corresponding public sources and update the data paths in the scripts before running the experiments.
-
-## Usage
-
-After preparing the data, run the scripts according to the desired experiment. For the proposed DERE framework, follow the sequential pipeline in `DERE-main/`:
-
-```bash
-cd DERE-main
-python Step01_DERE_Train_3PureModels_CompetitionModel.py
-python Step02_DERE_Finetune_CompetitionModel.py
-python Step03_DERE_Train_PFTModel.py
-python Step04_DERE_Finetune_with_InSitu.py
-cd Step05_DERE_InSitu_imputation_CSDI-main
-python 05_DERE_InSitu_imputation.py
-cd ..
-python Step06_DERE_Finetune_with_InSitu_imputation.py
-```
-
-For baseline or KGML experiments, run the corresponding scripts directly. For example:
-
-```bash
-cd DERE-main
-python 01_Baseline_Transformer.py
-python 02_KGML_Transformer.py
-```
-
-Please check and modify dataset paths, model settings, training settings, and output directories in each script before running.
-
-## Outputs
-
-The scripts save training logs, checkpoints, and prediction results according to the paths specified in the corresponding experiment files. Please create the required output folders before running the experiments if they are not automatically generated.
-
-## Citation
-
-If you find this repository useful, please cite our paper:
+If you find this repository useful, please cite:
 
 ```bibtex
 @inproceedings{xu2026dere,
@@ -180,12 +141,12 @@ If you find this repository useful, please cite our paper:
 }
 ```
 
-Please update the citation once the official proceedings information is available.
+Will update the citation once the official proceedings information is available.
 
-## Acknowledgment
 
-This repository includes implementations or adapted components related to several time-series forecasting and imputation models, including Informer, Transformer, FEDformer, iTransformer, TimeXer, SimpleTM, and CSDI. We thank the authors of these methods for making their work available to the community.
+## 📬 Contact
 
-## License
+For questions, please contact:
 
-Please refer to the license information in this repository. The CSDI-based imputation module contains its own license file in `DERE-main/Step05_DERE_InSitu_imputation_CSDI-main/`.
+**Shuo Xu** — [shuoxu98@umd.edu](mailto:shuoxu98@umd.edu)
+**Yiqun Xie** — [xie@umd.edu](mailto:xie@umd.edu)
