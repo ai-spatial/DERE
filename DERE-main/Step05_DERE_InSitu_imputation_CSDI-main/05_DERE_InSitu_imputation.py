@@ -43,7 +43,7 @@ print(json.dumps(config, indent=4))
 datafolder = './data/ED/'
 
 
-# networks = ["above","ameriflux","fluxnet", "icos-ww", "mix", "icos-2023"]
+
 net = '6networks'
 # for net in networks: 
 for varname in ["gpp","nee", "reco"]: 
