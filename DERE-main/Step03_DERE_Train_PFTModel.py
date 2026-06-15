@@ -7,7 +7,7 @@ args = dotdict()
 
 args.model =  'OneBranch_ED_ALLAGE_PFT_Prediction' # 'MultiBranch_AddPure' # 'MultiBranch' # 'informer_noT' # model of experiment, options: [informer, informerstack, informerlight(TBD)]
 args.data = 'ED' # data
-args.root_path = os.path.join('Dataset', 'DeepED_dataset') # root path of data file
+args.root_path = 'Dataset' # root path of data file
 args.data_path = '1_res_train4_test8_allx_plus_ageweight_esapft_update.npz' # data file
 args.stat_path = 'data_stats.npz' # stat file
 args.pft_path = '1_ED_PFT_train4_test8_1992_to_2020_update.npz' # pft file
