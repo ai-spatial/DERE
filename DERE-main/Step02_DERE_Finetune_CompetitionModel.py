@@ -7,7 +7,7 @@ args = dotdict()
 
 args.model =  'MultiBranch_AddPure_AddCom_Finetune_Mixdata_ShareStructure' # 'MultiBranch_AddPure' # 'MultiBranch' # 'informer_noT' # model of experiment, options: [informer, informerstack, informerlight(TBD)]
 args.data = 'ED' # data
-args.root_path = os.path.join('Dataset', 'DeepED_dataset') # root path of data file
+args.root_path = 'Dataset' # root path of data file
 
 args.data_path = 'res_train4_test8_extract_28years_ageindependent_update_with_NEE_Ra_RECO.npz' # data file
 args.stat_path = 'data_stats_with_NEE_Ra_RECO.npz' # stat file
