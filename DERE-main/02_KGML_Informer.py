@@ -7,7 +7,7 @@ args = dotdict()
 
 args.model =  'OneBranch' # 'MultiBranch_AddPure' # 'MultiBranch' # 'informer_noT' # model of experiment, options: [informer, informerstack, informerlight(TBD)]
 args.data = 'ED' # data
-args.root_path = os.path.join('Dataset', 'DERE_dataset') # root path of data file
+args.root_path = 'Dataset' # root path of data file
 # args.data_path = 'res_train4_test8_extract_28years_ageindependent.npz' # data file
 args.stat_path = 'data_stats_with_NEE_Ra_RECO.npz' # stat file
 # args.pft_path = 'pft_dataset_12mean_28years_ageindependent_plus_ageweight.npz' # pft file
