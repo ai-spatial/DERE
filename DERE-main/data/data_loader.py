@@ -63,22 +63,22 @@ class Dataset_AddPure_Extract4types(Dataset):
         self.y_std = stat_raw['y_std']
         
         data_raw = np.load(os.path.join(self.root_path, self.data_path))
-        # x = (N, 40, 12, 136)
-        # y = (age, N, 41, 12, 10)
+        # x = (N, Y, 12, 136)
+        # y = (age, N, Y+1, 12, 10)
         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-        # (N, 18, 41, 12)
+        # (N, 18, Y+1, 12)
 
         if self.set_type == 2: 
-            data_x = data_raw[f'x_test_MIX'] # (2825, 40, 12, 136)
-            data_y = data_raw[f'y_test_MIX'] # (2825, 41, 12, 10)
-            data_x_BL = data_raw[f'x_test_BL'] # (254, 40, 12, 136)
-            data_x_NL = data_raw[f'x_test_NL'] # (582, 40, 12, 136)
-            data_x_GS = data_raw[f'x_test_GS'] # (615, 40, 12, 136)
-            data_y_BL = data_raw[f'y_test_BL'] # (254, 41, 12, 10)
-            data_y_NL = data_raw[f'y_test_NL'] # (582, 41, 12, 10)
-            data_y_GS = data_raw[f'y_test_GS'] # (615, 41, 12, 10)
+            data_x = data_raw[f'x_test_MIX'] # (2825, Y, 12, 136)
+            data_y = data_raw[f'y_test_MIX'] # (2825, Y+1, 12, 10)
+            data_x_BL = data_raw[f'x_test_BL'] # (254, Y, 12, 136)
+            data_x_NL = data_raw[f'x_test_NL'] # (582, Y, 12, 136)
+            data_x_GS = data_raw[f'x_test_GS'] # (615, Y, 12, 136)
+            data_y_BL = data_raw[f'y_test_BL'] # (254, Y+1, 12, 10)
+            data_y_NL = data_raw[f'y_test_NL'] # (582, Y+1, 12, 10)
+            data_y_GS = data_raw[f'y_test_GS'] # (615, Y+1, 12, 10)
 
-            # pft_BL = pft_raw['test_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 18, 41, 12) to (N, age, 41, 12, 1) 
+            # pft_BL = pft_raw['test_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 18, Y+1, 12) to (N, age, Y+1, 12, 1) 
             # pft_NL = pft_raw['test_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             # pft_GS = pft_raw['test_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             pft_BL_BL = pft_raw['test_pft_BL_BL'][:, 12:][..., np.newaxis] # (254, 492) to (N, 336, 1) 
@@ -95,15 +95,15 @@ class Dataset_AddPure_Extract4types(Dataset):
             pft_MIX_GS = pft_raw['test_pft_MIX_GS'][:, 12:][..., np.newaxis]
 
         else: 
-            data_x = data_raw[f'x_train_MIX'] # (11415, 40, 12, 136)
-            data_y = data_raw[f'y_train_MIX'] # (11415, 41, 12, 10)
-            data_x_BL = data_raw[f'x_train_BL'] # (958, 40, 12, 136)
-            data_x_NL = data_raw[f'x_train_NL'] # (2180, 40, 12, 136)
-            data_x_GS = data_raw[f'x_train_GS'] # (2556, 40, 12, 136)
-            data_y_BL = data_raw[f'y_train_BL'] # (958, 41, 12, 10)
-            data_y_NL = data_raw[f'y_train_NL'] # (2180, 41, 12, 10)
-            data_y_GS = data_raw[f'y_train_GS'] # (2556, 41, 12, 10)
-            # pft_BL = pft_raw['train_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, age, 40, 12, 1)
+            data_x = data_raw[f'x_train_MIX'] # (11415, Y, 12, 136)
+            data_y = data_raw[f'y_train_MIX'] # (11415, Y+1, 12, 10)
+            data_x_BL = data_raw[f'x_train_BL'] # (958, Y, 12, 136)
+            data_x_NL = data_raw[f'x_train_NL'] # (2180, Y, 12, 136)
+            data_x_GS = data_raw[f'x_train_GS'] # (2556, Y, 12, 136)
+            data_y_BL = data_raw[f'y_train_BL'] # (958, Y+1, 12, 10)
+            data_y_NL = data_raw[f'y_train_NL'] # (2180, Y+1, 12, 10)
+            data_y_GS = data_raw[f'y_train_GS'] # (2556, Y+1, 12, 10)
+            # pft_BL = pft_raw['train_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, age, Y, 12, 1)
             # pft_NL = pft_raw['train_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             # pft_GS = pft_raw['train_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             pft_BL_BL = pft_raw['train_pft_BL_BL'][:, 12:][..., np.newaxis] 
@@ -124,7 +124,7 @@ class Dataset_AddPure_Extract4types(Dataset):
         mask[..., 7] = False                    
         data_y[mask & (data_y < 0)] = 0
 
-        data_y_arr = data_y.copy() # (11415, 41, 12, 10)
+        data_y_arr = data_y.copy() # (11415, Y+1, 12, 10)
         data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1]*data_y_arr.shape[2], data_y_arr.shape[3]) # (N, 492, 10)
         data_y = data_y[:, 11:, :] # (N, 337, 10)
         data_y = data_y[:, np.newaxis, :, :]         
@@ -139,7 +139,7 @@ class Dataset_AddPure_Extract4types(Dataset):
         mask[..., 7] = False                    
         data_y_BL[mask & (data_y_BL < 0)] = 0
 
-        data_y_BL_arr = data_y_BL.copy() # (11415, 41, 12, 10)
+        data_y_BL_arr = data_y_BL.copy() # (11415, Y+1, 12, 10)
         data_y_BL = data_y_BL.reshape(data_y_BL_arr.shape[0], data_y_BL_arr.shape[1]*data_y_BL_arr.shape[2], data_y_BL_arr.shape[3]) # (N, 492, 10)
         data_y_BL = data_y_BL[:, 11:, :] 
         data_y_BL = data_y_BL[:, np.newaxis, :, :]         
@@ -154,7 +154,7 @@ class Dataset_AddPure_Extract4types(Dataset):
         mask[..., 7] = False                    
         data_y_NL[mask & (data_y_NL < 0)] = 0
 
-        data_y_NL_arr = data_y_NL.copy() # (11415, 41, 12, 10)
+        data_y_NL_arr = data_y_NL.copy() # (11415, Y+1, 12, 10)
         data_y_NL = data_y_NL.reshape(data_y_NL_arr.shape[0], data_y_NL_arr.shape[1]*data_y_NL_arr.shape[2], data_y_NL_arr.shape[3]) # (N, 492, 10)
         data_y_NL = data_y_NL[:, 11:, :] 
         data_y_NL = data_y_NL[:, np.newaxis, :, :]         
@@ -169,7 +169,7 @@ class Dataset_AddPure_Extract4types(Dataset):
         mask[..., 7] = False                    
         data_y_GS[mask & (data_y_GS < 0)] = 0
 
-        data_y_GS_arr = data_y_GS.copy() # (11415, 41, 12, 10)
+        data_y_GS_arr = data_y_GS.copy() # (11415, Y+1, 12, 10)
         data_y_GS = data_y_GS.reshape(data_y_GS_arr.shape[0], data_y_GS_arr.shape[1]*data_y_GS_arr.shape[2], data_y_GS_arr.shape[3]) # (N, 492, 10)
         data_y_GS = data_y_GS[:, 11:, :] 
         data_y_GS = data_y_GS[:, np.newaxis, :, :]         
@@ -180,28 +180,28 @@ class Dataset_AddPure_Extract4types(Dataset):
                  
 
         # dup x for matching ages 
-        # data_x = np.repeat(data_x[:, np.newaxis, :, :, :], self.aei-self.asi, axis=1)  # (2825, 40, 12, 136)
+        # data_x = np.repeat(data_x[:, np.newaxis, :, :, :], self.aei-self.asi, axis=1)  # (2825, Y, 12, 136)
         data_x_arr = data_x.copy()
-        data_x = data_x.reshape(data_x_arr.shape[0], data_x_arr.shape[1]*data_x_arr.shape[2], data_x_arr.shape[3]) # (N, 40 *12, 136)
-        data_x = data_x[:, np.newaxis, :, :] # (N, 1, 40 *12, 136)
+        data_x = data_x.reshape(data_x_arr.shape[0], data_x_arr.shape[1]*data_x_arr.shape[2], data_x_arr.shape[3]) # (N, Y *12, 136)
+        data_x = data_x[:, np.newaxis, :, :] # (N, 1, Y *12, 136)
         # normalize data
         data_x = self.__norm_data__(data_x, self.x_mean, self.x_std)
 
         data_x_BL_arr = data_x_BL.copy()
-        data_x_BL = data_x_BL.reshape(data_x_BL_arr.shape[0], data_x_BL_arr.shape[1]*data_x_BL_arr.shape[2], data_x_BL_arr.shape[3]) # (N, 40 *12, 136)
-        data_x_BL = data_x_BL[:, np.newaxis, :, :] # (N, 1, 40 *12, 136)
+        data_x_BL = data_x_BL.reshape(data_x_BL_arr.shape[0], data_x_BL_arr.shape[1]*data_x_BL_arr.shape[2], data_x_BL_arr.shape[3]) # (N, Y *12, 136)
+        data_x_BL = data_x_BL[:, np.newaxis, :, :] # (N, 1, Y *12, 136)
         # normalize data
         data_x_BL = self.__norm_data__(data_x_BL, self.x_mean, self.x_std)
 
         data_x_NL_arr = data_x_NL.copy()
-        data_x_NL = data_x_NL.reshape(data_x_NL_arr.shape[0], data_x_NL_arr.shape[1]*data_x_NL_arr.shape[2], data_x_NL_arr.shape[3]) # (N, 40 *12, 136)
-        data_x_NL = data_x_NL[:, np.newaxis, :, :] # (N, 1, 40 *12, 136)
+        data_x_NL = data_x_NL.reshape(data_x_NL_arr.shape[0], data_x_NL_arr.shape[1]*data_x_NL_arr.shape[2], data_x_NL_arr.shape[3]) # (N, Y *12, 136)
+        data_x_NL = data_x_NL[:, np.newaxis, :, :] # (N, 1, Y *12, 136)
         # normalize data
         data_x_NL = self.__norm_data__(data_x_NL, self.x_mean, self.x_std)
 
         data_x_GS_arr = data_x_GS.copy()
-        data_x_GS = data_x_GS.reshape(data_x_GS_arr.shape[0], data_x_GS_arr.shape[1]*data_x_GS_arr.shape[2], data_x_GS_arr.shape[3]) # (N, 40 *12, 136)
-        data_x_GS = data_x_GS[:, np.newaxis, :, :] # (N, 1, 40 *12, 136)
+        data_x_GS = data_x_GS.reshape(data_x_GS_arr.shape[0], data_x_GS_arr.shape[1]*data_x_GS_arr.shape[2], data_x_GS_arr.shape[3]) # (N, Y *12, 136)
+        data_x_GS = data_x_GS[:, np.newaxis, :, :] # (N, 1, Y *12, 136)
         # normalize data
         data_x_GS = self.__norm_data__(data_x_GS, self.x_mean, self.x_std)
 
@@ -379,7 +379,7 @@ class Dataset_AddPure_Extract4types(Dataset):
         if M != 12:
             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-        # Step 1: reshape to merge years and months → (age, N, 41*12, 10)       
+        # Step 1: reshape to merge years and months → (age, N, (Y+1)*12, 10)       
         arr_flat = arr.reshape(age, N, Y * M, F)
 
         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -403,7 +403,7 @@ class Dataset_AddPure_Extract4types(Dataset):
 
     def __generate_random_walk_noise__(self, shape, std):
         random_steps = np.random.normal(loc=0.0, scale=std, size=shape)
-        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "40" dimension
+        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "Y" dimension
         return random_walk_noise
     
     # Function to add random walk noise to the specified feature channels
@@ -487,10 +487,10 @@ class Dataset_AddPure_Extract4types_AgeIndependentCom(Dataset):
         self.y_std = stat_raw['y_std']
         
         data_raw = np.load(os.path.join(self.root_path, self.data_path))
-        # x = (N, 40, 12, 136)
-        # y = (age, N, 41, 12, 10)
+        # x = (N, Y, 12, 136)
+        # y = (age, N, Y+1, 12, 10)
         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-        # (N, 18, 41, 12)
+        # (N, 18, Y+1, 12)
 
         if self.set_type == 2: 
             data_x = data_raw[f'x_test'] # (N, 28, 12, 136)
@@ -513,7 +513,7 @@ class Dataset_AddPure_Extract4types_AgeIndependentCom(Dataset):
             data_y = data_raw[f'y_train'] # (18, N, 29, 12, 10)
             data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 10)
 
-            pft_MIX_BL = pft_raw['train_pft_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 18, 41, 12) to (N, age, 28, 12, 1)
+            pft_MIX_BL = pft_raw['train_pft_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 18, Y+1, 12) to (N, age, 28, 12, 1)
             pft_MIX_NL = pft_raw['train_pft_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis]
             pft_MIX_GS = pft_raw['train_pft_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis]
 
@@ -531,7 +531,7 @@ class Dataset_AddPure_Extract4types_AgeIndependentCom(Dataset):
 
         data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 10)        
         # # prepare inital and target pair 
-        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, 40, 24, 10)
+        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, Y, 24, 10)
         data_y_arr = data_y.copy() # (age, N, 29, 12, 10) 
         data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 29*12, 10)
         data_y = data_y[:, :, 11:, :] # (age, N, 337, 10)
@@ -683,7 +683,7 @@ class Dataset_AddPure_Extract4types_AgeIndependentCom(Dataset):
         if M != 12:
             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-        # Step 1: reshape to merge years and months → (age, N, 41*12, 10)       
+        # Step 1: reshape to merge years and months → (age, N, (Y+1)*12, 10)       
         arr_flat = arr.reshape(age, N, Y * M, F)
 
         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -707,7 +707,7 @@ class Dataset_AddPure_Extract4types_AgeIndependentCom(Dataset):
 
     def __generate_random_walk_noise__(self, shape, std):
         random_steps = np.random.normal(loc=0.0, scale=std, size=shape)
-        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "40" dimension
+        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "Y" dimension
         return random_walk_noise
     
     # Function to add random walk noise to the specified feature channels
@@ -792,10 +792,10 @@ class Dataset_ED_ALLAGE_PFT_Prediction(Dataset):
         # self.y_std = stat_raw['y_std']
         
         data_raw = np.load(os.path.join(self.root_path, self.data_path))
-        # x = (N, 40, 12, 136)
-        # y = (age, N, 41, 12, 10)
+        # x = (N, Y, 12, 136)
+        # y = (age, N, Y+1, 12, 10)
         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-        # (N, 18, 41, 12)
+        # (N, 18, Y+1, 12)
 
         if self.stage == 'step1': 
             if self.set_type == 2: 
@@ -813,9 +813,9 @@ class Dataset_ED_ALLAGE_PFT_Prediction(Dataset):
 
 
             # dup x for matching ages 
-            # data_x = np.repeat(data_x[:, np.newaxis, :, :, :], self.aei-self.asi, axis=1)  # (2825, 40, 12, 136)
+            # data_x = np.repeat(data_x[:, np.newaxis, :, :, :], self.aei-self.asi, axis=1)  # (2825, Y, 12, 136)
             data_x_arr = data_x.copy()  # (852, 28, 136*12)
-            # data_x = data_x.reshape(data_x_arr.shape[0], data_x_arr.shape[1]*data_x_arr.shape[2], data_x_arr.shape[3]) # (N, 40 *12, 136)
+            # data_x = data_x.reshape(data_x_arr.shape[0], data_x_arr.shape[1]*data_x_arr.shape[2], data_x_arr.shape[3]) # (N, Y *12, 136)
             data_x = data_x[:, np.newaxis, :, :] # (N, 1, 28, 136*12)
             # normalize data
             # data_x = self.__norm_data__(data_x, self.x_mean, self.x_std) # (N, 1, 28, 136*12)
@@ -875,9 +875,9 @@ class Dataset_ED_ALLAGE_PFT_Prediction(Dataset):
                 AgeWeight = data_raw['AgeWeight_train']
 
             # dup x for matching ages 
-            # data_x = np.repeat(data_x[:, np.newaxis, :, :, :], self.aei-self.asi, axis=1)  # (2825, 40, 12, 136)
+            # data_x = np.repeat(data_x[:, np.newaxis, :, :, :], self.aei-self.asi, axis=1)  # (2825, Y, 12, 136)
             data_x_arr = data_x.copy()  # (852, 28, 136*12)
-            # data_x = data_x.reshape(data_x_arr.shape[0], data_x_arr.shape[1]*data_x_arr.shape[2], data_x_arr.shape[3]) # (N, 40 *12, 136)
+            # data_x = data_x.reshape(data_x_arr.shape[0], data_x_arr.shape[1]*data_x_arr.shape[2], data_x_arr.shape[3]) # (N, Y *12, 136)
             data_x = data_x[:, np.newaxis, :, :] # (N, 1, 28, 136*12)
             # normalize data
             # data_x = self.__norm_data__(data_x, self.x_mean, self.x_std) # (N, 1, 28, 136*12)
@@ -974,7 +974,7 @@ class Dataset_ED_ALLAGE_PFT_Prediction(Dataset):
         if M != 12:
             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-        # Step 1: reshape to merge years and months → (age, N, 41*12, 10)       
+        # Step 1: reshape to merge years and months → (age, N, (Y+1)*12, 10)       
         arr_flat = arr.reshape(age, N, Y * M, F)
 
         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -998,7 +998,7 @@ class Dataset_ED_ALLAGE_PFT_Prediction(Dataset):
 
     def __generate_random_walk_noise__(self, shape, std):
         random_steps = np.random.normal(loc=0.0, scale=std, size=shape)
-        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "40" dimension
+        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "Y" dimension
         return random_walk_noise
     
     # Function to add random walk noise to the specified feature channels
@@ -1082,15 +1082,15 @@ class Dataset_AddPure_Extract4types_CombineWith_PFT_Prediction(Dataset):
         self.y_std = stat_raw['y_std']
         
         data_raw = np.load(os.path.join(self.root_path, self.data_path))
-        # x = (N, 40, 12, 136)
-        # y = (age, N, 41, 12, 10)
+        # x = (N, Y, 12, 136)
+        # y = (age, N, Y+1, 12, 10)
         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-        # (N, 18, 41, 12)
+        # (N, 18, Y+1, 12)
 
         if self.set_type == 2: 
             data_x = data_raw[f'x_test'] # (N, 28, 12, 136)
             data_y = data_raw[f'y_test'] # (18, N, 29, 12, 10)
-            # pft_BL = pft_raw['test_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 18, 41, 12) to (N, age, 41, 12, 1) 
+            # pft_BL = pft_raw['test_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 18, Y+1, 12) to (N, age, Y+1, 12, 1) 
             # pft_NL = pft_raw['test_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             # pft_GS = pft_raw['test_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             pft_MIX_BL = pft_raw['ESA_BL_test'][..., np.newaxis] # (N, 29) to (N, 29, 1)
@@ -1105,7 +1105,7 @@ class Dataset_AddPure_Extract4types_CombineWith_PFT_Prediction(Dataset):
         else: 
             data_x = data_raw[f'x_train'] # (46, 28, 12, 136)
             data_y = data_raw[f'y_train'] # (18, 46, 29, 12, 10)
-            # pft_BL = pft_raw['train_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, age, 40, 12, 1)
+            # pft_BL = pft_raw['train_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, age, Y, 12, 1)
             # pft_NL = pft_raw['train_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             # pft_GS = pft_raw['train_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             pft_MIX_BL = pft_raw['ESA_BL_train'][..., np.newaxis]
@@ -1139,7 +1139,7 @@ class Dataset_AddPure_Extract4types_CombineWith_PFT_Prediction(Dataset):
 
         data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 10)       
         # # prepare inital and target pair 
-        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, 40, 24, 10)
+        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, Y, 24, 10)
         data_y_arr = data_y.copy() # (age, N, 29, 12, 10)   
         data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 348, 10)
         data_y = data_y[:, :, 11:, :] # (age, N, 337, 10)
@@ -1279,7 +1279,7 @@ class Dataset_AddPure_Extract4types_CombineWith_PFT_Prediction(Dataset):
         if M != 12:
             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-        # Step 1: reshape to merge years and months → (age, N, 41*12, 10)       
+        # Step 1: reshape to merge years and months → (age, N, (Y+1)*12, 10)       
         arr_flat = arr.reshape(age, N, Y * M, F)
 
         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -1303,7 +1303,7 @@ class Dataset_AddPure_Extract4types_CombineWith_PFT_Prediction(Dataset):
 
     def __generate_random_walk_noise__(self, shape, std):
         random_steps = np.random.normal(loc=0.0, scale=std, size=shape)
-        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "40" dimension
+        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "Y" dimension
         return random_walk_noise
     
     # Function to add random walk noise to the specified feature channels
@@ -1388,15 +1388,15 @@ class Dataset_AddPure_Extract4types_CombineWith_PFT_Prediction_imputation(Datase
         self.y_std = stat_raw['y_std']
         
         data_raw = np.load(os.path.join(self.root_path, self.data_path))
-        # x = (N, 40, 12, 136)
-        # y = (age, N, 41, 12, 10)
+        # x = (N, Y, 12, 136)
+        # y = (age, N, Y+1, 12, 10)
         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-        # (N, 18, 41, 12)
+        # (N, 18, Y+1, 12)
 
         if self.set_type == 2: 
             data_x = data_raw[f'x_test'] # (N, 28, 12, 136)
             data_y = data_raw[f'y_test'] # (18, N, 29, 12, 10)
-            # pft_BL = pft_raw['test_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 18, 41, 12) to (N, age, 41, 12, 1) 
+            # pft_BL = pft_raw['test_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 18, Y+1, 12) to (N, age, Y+1, 12, 1) 
             # pft_NL = pft_raw['test_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             # pft_GS = pft_raw['test_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             pft_MIX_BL = pft_raw['ESA_BL_test'][..., np.newaxis] # (N, 29) to (N, 29, 1)
@@ -1412,7 +1412,7 @@ class Dataset_AddPure_Extract4types_CombineWith_PFT_Prediction_imputation(Datase
         else: 
             data_x = data_raw[f'x_train'] # (46, 28, 12, 136)
             data_y = data_raw[f'y_train'] # (18, 46, 29, 12, 10)
-            # pft_BL = pft_raw['train_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, age, 40, 12, 1)
+            # pft_BL = pft_raw['train_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, age, Y, 12, 1)
             # pft_NL = pft_raw['train_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             # pft_GS = pft_raw['train_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] 
             pft_MIX_BL = pft_raw['ESA_BL_train'][..., np.newaxis]
@@ -1448,7 +1448,7 @@ class Dataset_AddPure_Extract4types_CombineWith_PFT_Prediction_imputation(Datase
 
         data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 10)       
         # # prepare inital and target pair 
-        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, 40, 24, 10)
+        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, Y, 24, 10)
         data_y_arr = data_y.copy() # (age, N, 29, 12, 10)   
         data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 348, 10)
         data_y = data_y[:, :, 11:, :] # (age, N, 337, 10)
@@ -1591,7 +1591,7 @@ class Dataset_AddPure_Extract4types_CombineWith_PFT_Prediction_imputation(Datase
         if M != 12:
             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-        # Step 1: reshape to merge years and months → (age, N, 41*12, 10)       
+        # Step 1: reshape to merge years and months → (age, N, (Y+1)*12, 10)       
         arr_flat = arr.reshape(age, N, Y * M, F)
 
         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -1615,7 +1615,7 @@ class Dataset_AddPure_Extract4types_CombineWith_PFT_Prediction_imputation(Datase
 
     def __generate_random_walk_noise__(self, shape, std):
         random_steps = np.random.normal(loc=0.0, scale=std, size=shape)
-        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "40" dimension
+        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "Y" dimension
         return random_walk_noise
     
     # Function to add random walk noise to the specified feature channels
@@ -1700,10 +1700,10 @@ class Dataset_Baseline(Dataset):
         self.y_std = stat_raw['y_std']
         
         data_raw = np.load(os.path.join(self.root_path, self.data_path))
-        # x = (N, 40, 12, 136)
-        # y = (age, N, 41, 12, 10)
+        # x = (N, Y, 12, 136)
+        # y = (age, N, Y+1, 12, 10)
         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-        # (N, 18, 41, 12)
+        # (N, 18, Y+1, 12)
 
         if self.set_type == 2: 
             data_x = data_raw[f'x_test'] # (N, 28, 12, 136)
@@ -1739,7 +1739,7 @@ class Dataset_Baseline(Dataset):
         
         data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 10)        
         # # prepare inital and target pair 
-        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, 40, 24, 10)
+        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, Y, 24, 10)
         data_y_arr = data_y.copy() # (age, N, 29, 12, 10) 
         data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 29*12, 10)
         data_y = data_y[:, :, 11:, :] # (age, N, 337, 10)
@@ -1843,7 +1843,7 @@ class Dataset_Baseline(Dataset):
         if M != 12:
             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-        # Step 1: reshape to merge years and months → (age, N, 41*12, 10)       
+        # Step 1: reshape to merge years and months → (age, N, (Y+1)*12, 10)       
         arr_flat = arr.reshape(age, N, Y * M, F)
 
         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -1867,7 +1867,7 @@ class Dataset_Baseline(Dataset):
 
     def __generate_random_walk_noise__(self, shape, std):
         random_steps = np.random.normal(loc=0.0, scale=std, size=shape)
-        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "40" dimension
+        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "Y" dimension
         return random_walk_noise
     
     # Function to add random walk noise to the specified feature channels
@@ -1952,10 +1952,10 @@ class Dataset_KGML(Dataset):
         self.y_std = stat_raw['y_std']
         
         data_raw = np.load(os.path.join(self.root_path, self.data_path))
-        # x = (N, 40, 12, 136)
-        # y = (age, N, 41, 12, 10)
+        # x = (N, Y, 12, 136)
+        # y = (age, N, Y+1, 12, 10)
         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-        # (N, age, 41, 12)
+        # (N, age, Y+1, 12)
 
         if self.set_type == 2: 
             data_x = data_raw[f'x_test'] # (N, 28, 12, 136)
@@ -2120,7 +2120,7 @@ class Dataset_KGML(Dataset):
         if M != 12:
             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-        # Step 1: reshape to merge years and months → (age, N, 41*12, 10)       
+        # Step 1: reshape to merge years and months → (age, N, (Y+1)*12, 10)       
         arr_flat = arr.reshape(age, N, Y * M, F)
 
         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -2144,7 +2144,7 @@ class Dataset_KGML(Dataset):
 
     def __generate_random_walk_noise__(self, shape, std):
         random_steps = np.random.normal(loc=0.0, scale=std, size=shape)
-        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "40" dimension
+        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "Y" dimension
         return random_walk_noise
     
     # Function to add random walk noise to the specified feature channels
@@ -2230,10 +2230,10 @@ class Dataset_KGML(Dataset):
 #         self.y_std = stat_raw['y_std']
         
 #         data_raw = np.load(os.path.join(self.root_path, self.data_path))
-#         # x = (N, 40, 12, 136)
-#         # y = (age, N, 41, 12, 10)
+#         # x = (N, Y, 12, 136)
+#         # y = (age, N, Y+1, 12, 10)
 #         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-#         # (N, 18, 41, 12)
+#         # (N, 18, Y+1, 12)
 
 #         if self.set_type == 2: 
 #             data_x = data_raw[f'x_test'] # (N, 28, 12, 136)
@@ -2283,7 +2283,7 @@ class Dataset_KGML(Dataset):
 #         data_y[data_y < 0] = 0
 #         data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 10)        
 #         # # prepare inital and target pair 
-#         # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, 40, 24, 10)
+#         # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, Y, 24, 10)
 #         data_y_arr = data_y.copy() # (age, N, 29, 12, 10) 
 #         data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 29*12, 10)
 #         data_y = data_y[:, :, 11:, :] # (age, N, 337, 10)
@@ -2377,7 +2377,7 @@ class Dataset_KGML(Dataset):
 #         if M != 12:
 #             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-#         # Step 1: reshape to merge years and months → (age, N, 41*1210)       
+#         # Step 1: reshape to merge years and months     
 #         arr_flat = arr.reshape(age, N, Y * M, F)
 
 #         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -2401,7 +2401,7 @@ class Dataset_KGML(Dataset):
 
 #     def __generate_random_walk_noise__(self, shape, std):
 #         random_steps = np.random.normal(loc=0.0, scale=std, size=shape)
-#         random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "40" dimension
+#         random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "Y" dimension
 #         return random_walk_noise
     
 #     # Function to add random walk noise to the specified feature channels
