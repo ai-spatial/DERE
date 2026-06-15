@@ -60,71 +60,51 @@ class Dataset_ED2(Dataset):
         self.y_std = stat_raw['y_std']
         
         data_raw = np.load(os.path.join(self.root_path, self.data_path))
-        # x = (N, 40, 12, 136)
-        # y = (age, N, 41, 12, 7)
+        # x = (N, Y, 12, 136)
+        # y = (age, N, Y+1, 12, 10)
         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-        # (N, 15, 41, 12)
+        # (N, age, Y+1, 12)
 
         if self.set_type == 2: 
             data_x = data_raw[f'x_test'] # (N, 28, 12, 136)
-            data_y = data_raw[f'y_test'] # (15, N, 29, 12, 7)
+            data_y = data_raw[f'y_test'] # (age, N, 29, 12, 10)
             if self.stage == 'pretrain':    
-                data_y_agesum = data_raw[f'y_test_agesum'] # (N, 29, 12, 7)
+                data_y_agesum = data_raw[f'y_test_agesum'] # (N, 29, 12, 10)
                 N = data_y_agesum.shape[0]
                 # treecover = np.full((N, 29), np.nan)  
             elif self.stage == 'finetune':  
-                data_y_agesum = pft_raw[f'InSitu_test'] # (N, 29, 12, 7)
-                # treecover = pft_raw[f'Tree_Cover_test'] # (N, 29)
-                # data_tree_cover = pft_raw[f'Tree_Cover_test']
+                data_y_agesum = pft_raw[f'InSitu_test'] # (N, 29, 12, 3)
 
-            # pft_MIX_BL = pft_raw['test_pft_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 15, 29, 12) to (N, age, 28, 12, 1)
-            # pft_MIX_NL = pft_raw['test_pft_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis]
-            # pft_MIX_GS = pft_raw['test_pft_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis]
-
-            # pft_MIX_BL_agesum = pft_raw['test_pft_BL_agesum'][:, 1:, ...][..., np.newaxis] # (N, 29, 12) to (N, 28, 12, 1)
-            # pft_MIX_NL_agesum = pft_raw['test_pft_NL_agesum'][:, 1:, ...][..., np.newaxis]
-            # pft_MIX_GS_agesum = pft_raw['test_pft_GS_agesum'][:, 1:, ...][..., np.newaxis]
-
-            AgeWeight = pft_raw['AgeWeight_test'].swapaxes(0, 1) # (N, 15)
+            AgeWeight = pft_raw['AgeWeight_test'].swapaxes(0, 1) # (N, age)
 
 
         else: 
             data_x = data_raw[f'x_train'] # (N, 28, 12, 136)
-            data_y = data_raw[f'y_train'] # (15, N, 29, 12, 7)
-            # data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 7)
+            data_y = data_raw[f'y_train'] # (age, N, 29, 12, 10)
+            # data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 10)
             if self.stage == 'pretrain':    
-                data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 7)
+                data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 10)
                 N = data_y_agesum.shape[0]
-                mask = np.ones_like(data_y_agesum, dtype=bool) 
-                mask[..., 7] = False                    
-                data_y_agesum[mask & (data_y_agesum < 0)] = 0
                 # treecover = np.full((N, 29), np.nan)  
             elif self.stage == 'finetune':  
-                data_y_agesum = pft_raw[f'InSitu_train'] # (N, 29, 12)
-                mask = np.ones_like(data_y_agesum, dtype=bool) 
-                mask[..., 2] = False                    
-                data_y_agesum[mask & (data_y_agesum < 0)] = 0
-                # treecover = pft_raw[f'Tree_Cover_train'] # (N, 29)
-                # data_tree_cover = pft_raw[f'Tree_Cover_train']
-            # pft_MIX_BL = pft_raw['train_pft_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 15, 41, 12) to (N, age, 28, 12, 1)
-            # pft_MIX_NL = pft_raw['train_pft_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis]
-            # pft_MIX_GS = pft_raw['train_pft_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis]
+                data_y_agesum = pft_raw[f'InSitu_train']
 
-            # pft_MIX_BL_agesum = pft_raw['train_pft_BL_agesum'][:, 1:, ...][..., np.newaxis] # (N, 29, 12) to (N, 28, 12, 1)
-            # pft_MIX_NL_agesum = pft_raw['train_pft_NL_agesum'][:, 1:, ...][..., np.newaxis]
-            # pft_MIX_GS_agesum = pft_raw['train_pft_GS_agesum'][:, 1:, ...][..., np.newaxis]
+            AgeWeight = pft_raw['AgeWeight_train'].swapaxes(0, 1) # (N, age)
 
-            AgeWeight = pft_raw['AgeWeight_train'].swapaxes(0, 1) # (N, 15)
+        if self.stage == 'pretrain':    
+            mask = np.ones_like(data_y_agesum, dtype=bool) 
+            mask[..., 7] = False                    
+            data_y_agesum[mask & (data_y_agesum < 0)] = 0
+            # treecover = np.full((N, 29), np.nan)  
+        elif self.stage == 'finetune':  
+            mask = np.ones_like(data_y_agesum, dtype=bool) 
+            mask[..., 2] = False                    
+            data_y_agesum[mask & (data_y_agesum < 0)] = 0    
 
-        # data_y_agesum[data_y_agesum < 0] = 0 # (N, 29, 12, 7)
-        # mask = np.ones_like(data_y_agesum, dtype=bool) 
-        # mask[..., 7] = False                    
-        # data_y_agesum[mask & (data_y_agesum < 0)] = 0
-
-        data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, 7)
-        data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2], data_y_agesum_arr.shape[3]) # (N, 29*12, 7)
-        data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, 7)
-        data_y_agesum = data_y_agesum[:, np.newaxis, :, :] # (N, 1, 337, 7)        
+        data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, *)
+        data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2], data_y_agesum_arr.shape[3]) # (N, 29*12, *)
+        data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, *)
+        data_y_agesum = data_y_agesum[:, np.newaxis, :, :] # (N, 1, 337, *)        
         # data_y_agesum = np.transpose(data_y_agesum, (1,0,2,3,4))
         # add random-walk noise to target
         if self.add_noise:
@@ -135,36 +115,20 @@ class Dataset_ED2(Dataset):
             data_y_agesum = self.__norm_data__(data_y_agesum, self.y_mean, self.y_std)
         elif self.stage == 'finetune':  
             data_y_agesum = self.__norm_data__(data_y_agesum, self.y_mean[[4, 9, 7]], self.y_std[[4, 9, 7]])
-            # # data_y_agesum[data_y_agesum < 0] = 0 # (N, 29, 12)
-            # mask = np.ones_like(data_y_agesum, dtype=bool) 
-            # mask[..., 7] = False                    
-            # data_y_agesum[mask & (data_y_agesum < 0)] = 0
-
-            # data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12)
-            # data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2]) # (N, 29*12)
-            # data_y_agesum = data_y_agesum[:, 11:] # (N, 337)
-            # data_y_agesum = data_y_agesum[:, np.newaxis, :] # (N, 1, 337)        
-            # # data_y_agesum = np.transpose(data_y_agesum, (1,0,2,3,4))
-            # # add random-walk noise to target
-            # if self.add_noise:
-            #     data_y_agesum =  self.__add_random_walk_noise_to_batch__(data_y_agesum, self.noise_std)
             
-
-        # change negative GPP, NPP to zero (shuo)
-        # data_y[data_y < 0] = 0
         mask = np.ones_like(data_y, dtype=bool) 
         mask[..., 7] = False                    
         data_y[mask & (data_y < 0)] = 0
         
         # keep 12 month as target (shuo)
-        data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 7)        
+        data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 10)        
         # # prepare inital and target pair 
-        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, 40, 24, 7)
-        data_y_arr = data_y.copy() # (age, N, 29, 12, 7) 
-        data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 29*12, 7)
-        data_y = data_y[:, :, 11:, :] # (age, N, 337, 7)
-        data_y = data_y[:, :, np.newaxis, :, :] # (age, N, 1, 337, 7)   
-        data_y = np.transpose(data_y, (1,0,2,3,4)) # (N, age, 1, 337, 7)  
+        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, Y, 24, 10)
+        data_y_arr = data_y.copy() # (age, N, 29, 12, 10) 
+        data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 29*12, 10)
+        data_y = data_y[:, :, 11:, :] # (age, N, 337, 10)
+        data_y = data_y[:, :, np.newaxis, :, :] # (age, N, 1, 337, 10)   
+        data_y = np.transpose(data_y, (1,0,2,3,4)) # (N, age, 1, 337, 10)  
         # add random-walk noise to target
         if self.add_noise:
             data_y =  self.__add_random_walk_noise_to_batch__(data_y, self.noise_std)
@@ -179,22 +143,6 @@ class Dataset_ED2(Dataset):
         data_x = self.__norm_data__(data_x, self.x_mean, self.x_std)
         data_y = self.__norm_data__(data_y, self.y_mean, self.y_std)
 
-        # (N, age, 28, 12, 1)
-        # pft_MIX_BL = pft_MIX_BL.reshape(data_y_arr.shape[1], data_y_arr.shape[0], (data_y_arr.shape[2]-1)*data_y_arr.shape[3], 1) # (N, age, 336, 1)
-        # pft_MIX_BL = pft_MIX_BL[:, :, np.newaxis, :, :] # (N, age, 1, 336, 1)
-        # pft_MIX_NL = pft_MIX_NL.reshape(data_y_arr.shape[1], data_y_arr.shape[0], (data_y_arr.shape[2]-1)*data_y_arr.shape[3], 1)
-        # pft_MIX_NL = pft_MIX_NL[:, :, np.newaxis, :, :]
-        # pft_MIX_GS = pft_MIX_GS.reshape(data_y_arr.shape[1], data_y_arr.shape[0], (data_y_arr.shape[2]-1)*data_y_arr.shape[3], 1)
-        # pft_MIX_GS = pft_MIX_GS[:, :, np.newaxis, :, :]
-
-        # (N, 28, 12, 1)
-        # pft_MIX_BL_agesum = pft_MIX_BL_agesum.reshape(data_y_arr.shape[1], (data_y_arr.shape[2]-1)*data_y_arr.shape[3], 1) # (N, 336, 1)
-        # pft_MIX_BL_agesum = pft_MIX_BL_agesum[:, np.newaxis, :, :] # (N, 1, 336, 1)
-        # pft_MIX_NL_agesum = pft_MIX_NL_agesum.reshape(data_y_arr.shape[1], (data_y_arr.shape[2]-1)*data_y_arr.shape[3], 1)
-        # pft_MIX_NL_agesum = pft_MIX_NL_agesum[:, np.newaxis, :, :]
-        # pft_MIX_GS_agesum = pft_MIX_GS_agesum.reshape(data_y_arr.shape[1], (data_y_arr.shape[2]-1)*data_y_arr.shape[3], 1)
-        # pft_MIX_GS_agesum = pft_MIX_GS_agesum[:, np.newaxis, :, :]
-
         # split train and val
         if self.set_type != 2:
             idx = np.arange(data_x.shape[0])
@@ -207,8 +155,8 @@ class Dataset_ED2(Dataset):
 
             if self.set_type == 0:
                 data_x = data_x[idx_train] # (N, age, 1, 336, 136)        
-                data_y = data_y[idx_train] # (N, age, 1, 337, 7)   
-                data_y_agesum = data_y_agesum[idx_train] # (N, 1, 337, 7) or (N, 1, 337)
+                data_y = data_y[idx_train] # (N, age, 1, 337, 10)   
+                data_y_agesum = data_y_agesum[idx_train] # (N, 1, 337, *) or (N, 1, 337)
 
                 # pft_MIX_BL = pft_MIX_BL[idx_train] # (N, age, 1, 336, 1)
                 # pft_MIX_NL = pft_MIX_NL[idx_train]
@@ -217,45 +165,23 @@ class Dataset_ED2(Dataset):
                 # pft_MIX_NL_agesum = pft_MIX_NL_agesum[idx_train]
                 # pft_MIX_GS_agesum = pft_MIX_GS_agesum[idx_train]
 
-                AgeWeight = AgeWeight[idx_train] # (N, 15)
+                AgeWeight = AgeWeight[idx_train] # (N, age)
                 # treecover = treecover[idx_train]
             else:
                 data_x = data_x[idx_val]            
                 data_y = data_y[idx_val]
                 data_y_agesum = data_y_agesum[idx_val]
 
-                # pft_MIX_BL = pft_MIX_BL[idx_val]
-                # pft_MIX_NL = pft_MIX_NL[idx_val]
-                # pft_MIX_GS = pft_MIX_GS[idx_val]
-                # pft_MIX_BL_agesum = pft_MIX_BL_agesum[idx_val]
-                # pft_MIX_NL_agesum = pft_MIX_NL_agesum[idx_val]
-                # pft_MIX_GS_agesum = pft_MIX_GS_agesum[idx_val]
-
                 AgeWeight = AgeWeight[idx_val]
                 # treecover = treecover[idx_val]
                 # data_tree_cover = 
   
-        # self.data_x = data_x.reshape(-1, data_x.shape[3], data_x.shape[4]) # (N, age, 1, 336, 136) to (-1, 336, 136)
-        # self.data_y = data_y.reshape(-1, data_y.shape[3], data_y.shape[4]) # (N, age, 1, 337, 7) to (-1, 337, 7)
-        # self.pft_MIX_BL = pft_MIX_BL.reshape(-1, pft_MIX_BL.shape[3], pft_MIX_BL.shape[4]) # (N, age, 1, 336, 1) to (-1, 336, 1)
-        # self.pft_MIX_NL = pft_MIX_NL.reshape(-1, pft_MIX_NL.shape[3], pft_MIX_NL.shape[4]) 
-        # self.pft_MIX_GS = pft_MIX_GS.reshape(-1, pft_MIX_GS.shape[3], pft_MIX_GS.shape[4]) 
         self.data_x = np.squeeze(data_x, axis=2) # (N, age, 1, 336, 136) to (N, age, 336, 136)
-        self.data_y = np.squeeze(data_y, axis=2) # (N, age, 1, 337, 7) to (N, age, 337, 7)
-        # self.pft_MIX_BL = pft_MIX_BL.squeeze(2) # (N, age, 1, 336, 1) to (N, age, 336, 1)
-        # self.pft_MIX_NL = pft_MIX_NL.squeeze(2)
-        # self.pft_MIX_GS = pft_MIX_GS.squeeze(2)
-       
-        # if self.stage == 'pretrain':    
-        self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2], data_y_agesum.shape[3]) # (N, 1, 337, 7) to (-1, 337, 7)
-        # elif self.stage == 'finetune':  
-        #     self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2]) # (N, 1, 337) to (-1, 337)
+        self.data_y = np.squeeze(data_y, axis=2) # (N, age, 1, 337, 10) to (N, age, 337, 10)
         
-        # self.pft_MIX_BL_agesum = pft_MIX_BL_agesum.reshape(-1, pft_MIX_BL_agesum.shape[2], pft_MIX_BL_agesum.shape[3]) # (N, 1, 336, 1) to (-1, 336, 1)
-        # self.pft_MIX_NL_agesum = pft_MIX_NL_agesum.reshape(-1, pft_MIX_NL_agesum.shape[2], pft_MIX_NL_agesum.shape[3])
-        # self.pft_MIX_GS_agesum = pft_MIX_GS_agesum.reshape(-1, pft_MIX_GS_agesum.shape[2], pft_MIX_GS_agesum.shape[3])
+        self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2], data_y_agesum.shape[3]) # (N, 1, 337, *) to (-1, 337, *)
         
-        self.AgeWeight = AgeWeight # (N, 15)
+        self.AgeWeight = AgeWeight # (N, age)
         # self.treecover = treecover
 
         print(f'{self.flag} data size x={self.data_x.shape}, y={self.data_y.shape}, data_y_agesum={self.data_y_agesum.shape},  AgeWeight={self.AgeWeight.shape}')
@@ -310,7 +236,7 @@ class Dataset_ED2(Dataset):
         if M != 12:
             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-        # Step 1: reshape to merge years and months → (age, N, 41*12, 7)       
+        # Step 1: reshape to merge years and months → (age, N, (Y+1)*12, 7)       
         arr_flat = arr.reshape(age, N, Y * M, F)
 
         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -334,7 +260,7 @@ class Dataset_ED2(Dataset):
 
     def __generate_random_walk_noise__(self, shape, std):
         random_steps = np.random.normal(loc=0.0, scale=std, size=shape)
-        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "40" dimension
+        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "Y" dimension
         return random_walk_noise
     
     # Function to add random walk noise to the specified feature channels
@@ -415,71 +341,31 @@ class Dataset_ED(Dataset):
         self.y_std = stat_raw['y_std']
         
         data_raw = np.load(os.path.join(self.root_path, self.data_path))
-        # x = (N, 40, 12, 136)
-        # y = (age, N, 41, 12, 7)
+        # x = (N, Y, 12, 136)
+        # y = (age, N, Y+1, 12, 10)
         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-        # (N, 15, 41, 12)
+        # (N, age, Y+1, 12)
 
         if self.set_type == 2: 
             data_x = data_raw[f'x_test'] # (N, 28, 12, 136)
-            data_y = data_raw[f'y_test'] # (15, N, 29, 12, 7)
-            # if self.stage == 'pretrain':    
-            #     data_y_agesum = data_raw[f'y_test_agesum'] # (N, 29, 12, 7)
-            #     N = data_y_agesum.shape[0]
-            #     # treecover = np.full((N, 29), np.nan)  
-            # elif self.stage == 'finetune':  
-            data_y_agesum = pft_raw[f'InSitu_test'] # (N, 29, 12, 7)
-                # treecover = pft_raw[f'Tree_Cover_test'] # (N, 29)
-                # data_tree_cover = pft_raw[f'Tree_Cover_test']
-
-            # pft_MIX_BL = pft_raw['test_pft_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 15, 29, 12) to (N, age, 28, 12, 1)
-            # pft_MIX_NL = pft_raw['test_pft_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis]
-            # pft_MIX_GS = pft_raw['test_pft_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis]
-
-            # pft_MIX_BL_agesum = pft_raw['test_pft_BL_agesum'][:, 1:, ...][..., np.newaxis] # (N, 29, 12) to (N, 28, 12, 1)
-            # pft_MIX_NL_agesum = pft_raw['test_pft_NL_agesum'][:, 1:, ...][..., np.newaxis]
-            # pft_MIX_GS_agesum = pft_raw['test_pft_GS_agesum'][:, 1:, ...][..., np.newaxis]
-
-            AgeWeight = pft_raw['AgeWeight_test'].swapaxes(0, 1) # (N, 15)
-
+            data_y = data_raw[f'y_test'] # (age, N, 29, 12, 10)
+            data_y_agesum = pft_raw[f'InSitu_test'] # (N, 29, 12, 3)
+            AgeWeight = pft_raw['AgeWeight_test'].swapaxes(0, 1) # (N, age)
 
         else: 
             data_x = data_raw[f'x_train'] # (N, 28, 12, 136)
-            data_y = data_raw[f'y_train'] # (15, N, 29, 12, 7)
-            # data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 7)
-            # if self.stage == 'pretrain':    
-            #     data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 7)
-            #     N = data_y_agesum.shape[0]
-            #     mask = np.ones_like(data_y_agesum, dtype=bool) 
-            #     mask[..., 7] = False                    
-            #     data_y_agesum[mask & (data_y_agesum < 0)] = 0
-            #     # treecover = np.full((N, 29), np.nan)  
-            # elif self.stage == 'finetune':  
-            data_y_agesum = pft_raw[f'InSitu_train'] # (N, 29, 12)
-            mask = np.ones_like(data_y_agesum, dtype=bool) 
-            mask[..., 2] = False                    
-            data_y_agesum[mask & (data_y_agesum < 0)] = 0
-                # treecover = pft_raw[f'Tree_Cover_train'] # (N, 29)
-                # data_tree_cover = pft_raw[f'Tree_Cover_train']
-            # pft_MIX_BL = pft_raw['train_pft_BL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis] # (N, 15, 41, 12) to (N, age, 28, 12, 1)
-            # pft_MIX_NL = pft_raw['train_pft_NL'][:, self.asi:self.aei, 1:, ...][..., np.newaxis]
-            # pft_MIX_GS = pft_raw['train_pft_GS'][:, self.asi:self.aei, 1:, ...][..., np.newaxis]
+            data_y = data_raw[f'y_train'] # (age, N, 29, 12, 10)
+            data_y_agesum = pft_raw[f'InSitu_train'] # (N, 29, 12, 3)
+            AgeWeight = pft_raw['AgeWeight_train'].swapaxes(0, 1) # (N, age)
 
-            # pft_MIX_BL_agesum = pft_raw['train_pft_BL_agesum'][:, 1:, ...][..., np.newaxis] # (N, 29, 12) to (N, 28, 12, 1)
-            # pft_MIX_NL_agesum = pft_raw['train_pft_NL_agesum'][:, 1:, ...][..., np.newaxis]
-            # pft_MIX_GS_agesum = pft_raw['train_pft_GS_agesum'][:, 1:, ...][..., np.newaxis]
+        mask = np.ones_like(data_y_agesum, dtype=bool) 
+        mask[..., 2] = False                    
+        data_y_agesum[mask & (data_y_agesum < 0)] = 0
 
-            AgeWeight = pft_raw['AgeWeight_train'].swapaxes(0, 1) # (N, 15)
-
-        # data_y_agesum[data_y_agesum < 0] = 0 # (N, 29, 12, 7)
-        # mask = np.ones_like(data_y_agesum, dtype=bool) 
-        # mask[..., 7] = False                    
-        # data_y_agesum[mask & (data_y_agesum < 0)] = 0
-
-        data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, 7)
-        data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2], data_y_agesum_arr.shape[3]) # (N, 29*12, 7)
-        data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, 7)
-        data_y_agesum = data_y_agesum[:, np.newaxis, :, :] # (N, 1, 337, 7)        
+        data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, 3)
+        data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2], data_y_agesum_arr.shape[3]) # (N, 29*12, 3)
+        data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, 3)
+        data_y_agesum = data_y_agesum[:, np.newaxis, :, :] # (N, 1, 337, 3)        
         # data_y_agesum = np.transpose(data_y_agesum, (1,0,2,3,4))
         # add random-walk noise to target
         if self.add_noise:
@@ -504,22 +390,18 @@ class Dataset_ED(Dataset):
             # if self.add_noise:
             #     data_y_agesum =  self.__add_random_walk_noise_to_batch__(data_y_agesum, self.noise_std)
             
-
-        # change negative GPP, NPP to zero (shuo)
-        # data_y[data_y < 0] = 0
         mask = np.ones_like(data_y, dtype=bool) 
         mask[..., 7] = False                    
         data_y[mask & (data_y < 0)] = 0
         
-        # keep 12 month as target (shuo)
-        data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 7)        
+        data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 10)        
         # # prepare inital and target pair 
-        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, 40, 24, 7)
-        data_y_arr = data_y.copy() # (age, N, 29, 12, 7) 
-        data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 29*12, 7)
-        data_y = data_y[:, :, 11:, :] # (age, N, 337, 7)
-        data_y = data_y[:, :, np.newaxis, :, :] # (age, N, 1, 337, 7)   
-        data_y = np.transpose(data_y, (1,0,2,3,4)) # (N, age, 1, 337, 7)  
+        # data_y = self.__sliding_window_monthly__(data_y, 2) # (age, N, Y, 24, 10)
+        data_y_arr = data_y.copy() # (age, N, 29, 12, 10) 
+        data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 29*12, 10)
+        data_y = data_y[:, :, 11:, :] # (age, N, 337, 10)
+        data_y = data_y[:, :, np.newaxis, :, :] # (age, N, 1, 337, 10)   
+        data_y = np.transpose(data_y, (1,0,2,3,4)) # (N, age, 1, 337, 10)  
         # add random-walk noise to target
         if self.add_noise:
             data_y =  self.__add_random_walk_noise_to_batch__(data_y, self.noise_std)
@@ -562,47 +444,24 @@ class Dataset_ED(Dataset):
 
             if self.set_type == 0:
                 data_x = data_x[idx_train] # (N, age, 1, 336, 136)        
-                data_y = data_y[idx_train] # (N, age, 1, 337, 7)   
-                data_y_agesum = data_y_agesum[idx_train] # (N, 1, 337, 7) or (N, 1, 337)
+                data_y = data_y[idx_train] # (N, age, 1, 337, 10)   
+                data_y_agesum = data_y_agesum[idx_train] # (N, 1, 337, 3) or (N, 1, 337)
+                AgeWeight = AgeWeight[idx_train] # (N, age)
 
-                # pft_MIX_BL = pft_MIX_BL[idx_train] # (N, age, 1, 336, 1)
-                # pft_MIX_NL = pft_MIX_NL[idx_train]
-                # pft_MIX_GS = pft_MIX_GS[idx_train]
-                # pft_MIX_BL_agesum = pft_MIX_BL_agesum[idx_train] # (N, 1, 336, 1)
-                # pft_MIX_NL_agesum = pft_MIX_NL_agesum[idx_train]
-                # pft_MIX_GS_agesum = pft_MIX_GS_agesum[idx_train]
-
-                AgeWeight = AgeWeight[idx_train] # (N, 15)
-                # treecover = treecover[idx_train]
             else:
                 data_x = data_x[idx_val]            
                 data_y = data_y[idx_val]
                 data_y_agesum = data_y_agesum[idx_val]
-
-                # pft_MIX_BL = pft_MIX_BL[idx_val]
-                # pft_MIX_NL = pft_MIX_NL[idx_val]
-                # pft_MIX_GS = pft_MIX_GS[idx_val]
-                # pft_MIX_BL_agesum = pft_MIX_BL_agesum[idx_val]
-                # pft_MIX_NL_agesum = pft_MIX_NL_agesum[idx_val]
-                # pft_MIX_GS_agesum = pft_MIX_GS_agesum[idx_val]
-
                 AgeWeight = AgeWeight[idx_val]
-                # treecover = treecover[idx_val]
-                # data_tree_cover = 
-  
-        # self.data_x = data_x.reshape(-1, data_x.shape[3], data_x.shape[4]) # (N, age, 1, 336, 136) to (-1, 336, 136)
-        # self.data_y = data_y.reshape(-1, data_y.shape[3], data_y.shape[4]) # (N, age, 1, 337, 7) to (-1, 337, 7)
-        # self.pft_MIX_BL = pft_MIX_BL.reshape(-1, pft_MIX_BL.shape[3], pft_MIX_BL.shape[4]) # (N, age, 1, 336, 1) to (-1, 336, 1)
-        # self.pft_MIX_NL = pft_MIX_NL.reshape(-1, pft_MIX_NL.shape[3], pft_MIX_NL.shape[4]) 
-        # self.pft_MIX_GS = pft_MIX_GS.reshape(-1, pft_MIX_GS.shape[3], pft_MIX_GS.shape[4]) 
+
         self.data_x = np.squeeze(data_x, axis=2) # (N, age, 1, 336, 136) to (N, age, 336, 136)
-        self.data_y = np.squeeze(data_y, axis=2) # (N, age, 1, 337, 7) to (N, age, 337, 7)
+        self.data_y = np.squeeze(data_y, axis=2) # (N, age, 1, 337, 10) to (N, age, 337, 10)
         # self.pft_MIX_BL = pft_MIX_BL.squeeze(2) # (N, age, 1, 336, 1) to (N, age, 336, 1)
         # self.pft_MIX_NL = pft_MIX_NL.squeeze(2)
         # self.pft_MIX_GS = pft_MIX_GS.squeeze(2)
         self.data_x = self.data_x[:,0,:,:]
         # if self.stage == 'pretrain':    
-        self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2], data_y_agesum.shape[3]) # (N, 1, 337, 7) to (-1, 337, 7)
+        self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2], data_y_agesum.shape[3]) # (N, 1, 337, 3) to (-1, 337, 3)
         # elif self.stage == 'finetune':  
         #     self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2]) # (N, 1, 337) to (-1, 337)
         
@@ -610,7 +469,7 @@ class Dataset_ED(Dataset):
         # self.pft_MIX_NL_agesum = pft_MIX_NL_agesum.reshape(-1, pft_MIX_NL_agesum.shape[2], pft_MIX_NL_agesum.shape[3])
         # self.pft_MIX_GS_agesum = pft_MIX_GS_agesum.reshape(-1, pft_MIX_GS_agesum.shape[2], pft_MIX_GS_agesum.shape[3])
         
-        self.AgeWeight = AgeWeight # (N, 15)
+        self.AgeWeight = AgeWeight # (N, age)
         # self.treecover = treecover
 
 
@@ -670,7 +529,7 @@ class Dataset_ED(Dataset):
         if M != 12:
             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-        # Step 1: reshape to merge years and months → (age, N, 41*12, 7)       
+        # Step 1: reshape to merge years and months → (age, N, (Y+1)*12, 7)       
         arr_flat = arr.reshape(age, N, Y * M, F)
 
         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -694,7 +553,7 @@ class Dataset_ED(Dataset):
 
     def __generate_random_walk_noise__(self, shape, std):
         random_steps = np.random.normal(loc=0.0, scale=std, size=shape)
-        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "40" dimension
+        random_walk_noise = np.cumsum(random_steps, axis=2)  # Axis 2 corresponds to the "Y" dimension
         return random_walk_noise
     
     # Function to add random walk noise to the specified feature channels
