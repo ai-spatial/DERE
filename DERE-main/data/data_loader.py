@@ -1708,19 +1708,20 @@ class Dataset_Baseline(Dataset):
         if self.set_type == 2: 
             data_x = data_raw[f'x_test'] # (N, 28, 12, 136)
             data_y = data_raw[f'y_test'] # (18, N, 29, 12, 10)
-            data_y_agesum = pft_raw[f'InSitu_test'] # (N, 29, 12, 10)
+            data_y_agesum = pft_raw[f'InSitu_test'] # (N, 29, 12, 3)
             AgeWeight = pft_raw['AgeWeight_test'].swapaxes(0, 1) # (N, 18)
 
 
         else: 
             data_x = data_raw[f'x_train'] # (N, 28, 12, 136)
             data_y = data_raw[f'y_train'] # (18, N, 29, 12, 10)
-            data_y_agesum = pft_raw[f'InSitu_train'] # (N, 29, 12)
-            mask = np.ones_like(data_y_agesum, dtype=bool) 
-            mask[..., 2] = False                    
-            data_y_agesum[mask & (data_y_agesum < 0)] = 0
+            data_y_agesum = pft_raw[f'InSitu_train'] # (N, 29, 12, 3)
             AgeWeight = pft_raw['AgeWeight_train'].swapaxes(0, 1) # (N, 18)
 
+        mask = np.ones_like(data_y_agesum, dtype=bool) 
+        mask[..., 2] = False                    
+        data_y_agesum[mask & (data_y_agesum < 0)] = 0
+            
         data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, 10)
         data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2], data_y_agesum_arr.shape[3]) # (N, 29*12, 10)
         data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, 10)
@@ -1954,46 +1955,48 @@ class Dataset_KGML(Dataset):
         # x = (N, 40, 12, 136)
         # y = (age, N, 41, 12, 10)
         pft_raw = np.load(os.path.join(self.root_path, self.pft_path))
-        # (N, 15, 41, 12)
+        # (N, age, 41, 12)
 
         if self.set_type == 2: 
             data_x = data_raw[f'x_test'] # (N, 28, 12, 136)
-            data_y = data_raw[f'y_test'] # (15, N, 29, 12, 7)
+            data_y = data_raw[f'y_test'] # (age, N, 29, 12, 10)
             if self.stage == 'pretrain':    
-                data_y_agesum = data_raw[f'y_test_agesum'] # (N, 29, 12, 7)
+                data_y_agesum = data_raw[f'y_test_agesum'] # (N, 29, 12, 10)
                 N = data_y_agesum.shape[0]
                 # treecover = np.full((N, 29), np.nan)  
             elif self.stage == 'finetune':  
-                data_y_agesum = pft_raw[f'InSitu_test'] # (N, 29, 12, 7)
+                data_y_agesum = pft_raw[f'InSitu_test'] # (N, 29, 12, 10)
 
-            AgeWeight = pft_raw['AgeWeight_test'].swapaxes(0, 1) # (N, 15)
+            AgeWeight = pft_raw['AgeWeight_test'].swapaxes(0, 1) # (N, age)
 
 
         else: 
             data_x = data_raw[f'x_train'] # (N, 28, 12, 136)
-            data_y = data_raw[f'y_train'] # (15, N, 29, 12, 7)
-            # data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 7)
+            data_y = data_raw[f'y_train'] # (age, N, 29, 12, 10)
+            # data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 10)
             if self.stage == 'pretrain':    
-                data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 7)
+                data_y_agesum = data_raw[f'y_train_agesum'] # (N, 29, 12, 10)
                 N = data_y_agesum.shape[0]
-                mask = np.ones_like(data_y_agesum, dtype=bool) 
-                mask[..., 7] = False                    
-                data_y_agesum[mask & (data_y_agesum < 0)] = 0
                 # treecover = np.full((N, 29), np.nan)  
             elif self.stage == 'finetune':  
                 data_y_agesum = pft_raw[f'InSitu_train']
-                mask = np.ones_like(data_y_agesum, dtype=bool) 
-                mask[..., 2] = False                    
-                data_y_agesum[mask & (data_y_agesum < 0)] = 0
 
-            AgeWeight = pft_raw['AgeWeight_train'].swapaxes(0, 1) # (N, 15)
+            AgeWeight = pft_raw['AgeWeight_train'].swapaxes(0, 1) # (N, age)
 
+        if self.stage == 'pretrain':    
+            mask = np.ones_like(data_y_agesum, dtype=bool) 
+            mask[..., 7] = False                    
+            data_y_agesum[mask & (data_y_agesum < 0)] = 0
+            # treecover = np.full((N, 29), np.nan)  
+        elif self.stage == 'finetune':  
+            mask = np.ones_like(data_y_agesum, dtype=bool) 
+            mask[..., 2] = False                    
+            data_y_agesum[mask & (data_y_agesum < 0)] = 0    
 
-
-        data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, 7)
+        data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, 10)
         data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2], data_y_agesum_arr.shape[3]) # (N, 29*12, 7)
-        data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, 7)
-        data_y_agesum = data_y_agesum[:, np.newaxis, :, :] # (N, 1, 337, 7)        
+        data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, 10)
+        data_y_agesum = data_y_agesum[:, np.newaxis, :, :] # (N, 1, 337, 10)        
         # data_y_agesum = np.transpose(data_y_agesum, (1,0,2,3,4))
         # add random-walk noise to target
         if self.add_noise:
@@ -2012,13 +2015,13 @@ class Dataset_KGML(Dataset):
         data_y[mask & (data_y < 0)] = 0
         
         # keep 12 month as target (shuo)
-        data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 7)        
+        data_y = data_y[self.asi:self.aei, ...] # (age, N, 29, 12, 10)        
 
-        data_y_arr = data_y.copy() # (age, N, 29, 12, 7) 
-        data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 29*12, 7)
-        data_y = data_y[:, :, 11:, :] # (age, N, 337, 7)
-        data_y = data_y[:, :, np.newaxis, :, :] # (age, N, 1, 337, 7)   
-        data_y = np.transpose(data_y, (1,0,2,3,4)) # (N, age, 1, 337, 7)  
+        data_y_arr = data_y.copy() # (age, N, 29, 12, 10) 
+        data_y = data_y.reshape(data_y_arr.shape[0], data_y_arr.shape[1], data_y_arr.shape[2]*data_y_arr.shape[3], data_y_arr.shape[4]) # (age, N, 29*12, 10)
+        data_y = data_y[:, :, 11:, :] # (age, N, 337, 10)
+        data_y = data_y[:, :, np.newaxis, :, :] # (age, N, 1, 337, 10)   
+        data_y = np.transpose(data_y, (1,0,2,3,4)) # (N, age, 1, 337, 10)  
         # add random-walk noise to target
         if self.add_noise:
             data_y =  self.__add_random_walk_noise_to_batch__(data_y, self.noise_std)
@@ -2047,11 +2050,11 @@ class Dataset_KGML(Dataset):
 
             if self.set_type == 0:
                 data_x = data_x[idx_train] # (N, age, 1, 336, 136)        
-                data_y = data_y[idx_train] # (N, age, 1, 337, 7)   
-                data_y_agesum = data_y_agesum[idx_train] # (N, 1, 337, 7) or (N, 1, 337)
+                data_y = data_y[idx_train] # (N, age, 1, 337, 10)   
+                data_y_agesum = data_y_agesum[idx_train] # (N, 1, 337, 10) or (N, 1, 337)
 
 
-                AgeWeight = AgeWeight[idx_train] # (N, 15)
+                AgeWeight = AgeWeight[idx_train] # (N, age)
                 # treecover = treecover[idx_train]
             else:
                 data_x = data_x[idx_val]            
@@ -2064,14 +2067,14 @@ class Dataset_KGML(Dataset):
                 # data_tree_cover = 
 
         self.data_x = np.squeeze(data_x, axis=2) # (N, age, 1, 336, 136) to (N, age, 336, 136)
-        self.data_y = np.squeeze(data_y, axis=2) # (N, age, 1, 337, 7) to (N, age, 337, 7)
+        self.data_y = np.squeeze(data_y, axis=2) # (N, age, 1, 337, 10) to (N, age, 337, 10)
 
        
         # if self.stage == 'pretrain':    
-        self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2], data_y_agesum.shape[3]) # (N, 1, 337, 7) to (-1, 337, 7)
+        self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2], data_y_agesum.shape[3]) # (N, 1, 337, 10) to (-1, 337, 10)
 
         
-        self.AgeWeight = AgeWeight # (N, 15)
+        self.AgeWeight = AgeWeight # (N, age)
         # self.treecover = treecover
 
         print(f'{self.flag} data size x={self.data_x.shape}, y={self.data_y.shape}, data_y_agesum={self.data_y_agesum.shape},  AgeWeight={self.AgeWeight.shape}')
@@ -2117,7 +2120,7 @@ class Dataset_KGML(Dataset):
         if M != 12:
             raise ValueError("Monthly dimension (axis=3) must be 12")
         
-        # Step 1: reshape to merge years and months → (age, N, 41*12, 7)       
+        # Step 1: reshape to merge years and months → (age, N, 41*12, 10)       
         arr_flat = arr.reshape(age, N, Y * M, F)
 
         # Step 2: sliding window on axis=2 (flattened time), window=24 (2 years)
@@ -2146,7 +2149,7 @@ class Dataset_KGML(Dataset):
     
     # Function to add random walk noise to the specified feature channels
     def __add_random_walk_noise_to_batch__(self, batch, std):
-        N, years, channels, features = batch.shape  # (N, 1, 337, 7)  
+        N, years, channels, features = batch.shape  # (N, 1, 337, 10)  
 
         # Generate random walk noise for the specified channels
         noise_shape = (N, years, features)
