@@ -1722,10 +1722,10 @@ class Dataset_Baseline(Dataset):
         mask[..., 2] = False                    
         data_y_agesum[mask & (data_y_agesum < 0)] = 0
             
-        data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, 10)
-        data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2], data_y_agesum_arr.shape[3]) # (N, 29*12, 10)
-        data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, 10)
-        data_y_agesum = data_y_agesum[:, np.newaxis, :, :] # (N, 1, 337, 10)        
+        data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, 3)
+        data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2], data_y_agesum_arr.shape[3]) # (N, 29*12, 3)
+        data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, 3)
+        data_y_agesum = data_y_agesum[:, np.newaxis, :, :] # (N, 1, 337, 3)        
         # data_y_agesum = np.transpose(data_y_agesum, (1,0,2,3,4))
         # add random-walk noise to target
         if self.add_noise:
@@ -1773,7 +1773,7 @@ class Dataset_Baseline(Dataset):
             if self.set_type == 0:
                 data_x = data_x[idx_train] # (N, age, 1, 336, 136)        
                 data_y = data_y[idx_train] # (N, age, 1, 337, 10)   
-                data_y_agesum = data_y_agesum[idx_train] # (N, 1, 337, 10) or (N, 1, 337)
+                data_y_agesum = data_y_agesum[idx_train] # (N, 1, 337, 3)
 
 
                 AgeWeight = AgeWeight[idx_train] # (N, 18)
@@ -1792,7 +1792,7 @@ class Dataset_Baseline(Dataset):
         # self.pft_MIX_GS = pft_MIX_GS.squeeze(2)
         self.data_x = self.data_x[:,0,:,:]
         # if self.stage == 'pretrain':    
-        self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2], data_y_agesum.shape[3]) # (N, 1, 337, 10) to (-1, 337, 10)
+        self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2], data_y_agesum.shape[3]) # (N, 1, 337, 3) to (-1, 337, 3)
 
         self.AgeWeight = AgeWeight # (N, 18)
         # self.treecover = treecover
@@ -1965,7 +1965,7 @@ class Dataset_KGML(Dataset):
                 N = data_y_agesum.shape[0]
                 # treecover = np.full((N, 29), np.nan)  
             elif self.stage == 'finetune':  
-                data_y_agesum = pft_raw[f'InSitu_test'] # (N, 29, 12, 10)
+                data_y_agesum = pft_raw[f'InSitu_test'] # (N, 29, 12, 3)
 
             AgeWeight = pft_raw['AgeWeight_test'].swapaxes(0, 1) # (N, age)
 
@@ -1993,10 +1993,10 @@ class Dataset_KGML(Dataset):
             mask[..., 2] = False                    
             data_y_agesum[mask & (data_y_agesum < 0)] = 0    
 
-        data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, 10)
-        data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2], data_y_agesum_arr.shape[3]) # (N, 29*12, 7)
-        data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, 10)
-        data_y_agesum = data_y_agesum[:, np.newaxis, :, :] # (N, 1, 337, 10)        
+        data_y_agesum_arr = data_y_agesum.copy() # (N, 29, 12, *)
+        data_y_agesum = data_y_agesum.reshape(data_y_agesum_arr.shape[0], data_y_agesum_arr.shape[1]*data_y_agesum_arr.shape[2], data_y_agesum_arr.shape[3]) # (N, 29*12, *)
+        data_y_agesum = data_y_agesum[:, 11:, :] # (N, 337, *)
+        data_y_agesum = data_y_agesum[:, np.newaxis, :, :] # (N, 1, 337, *)        
         # data_y_agesum = np.transpose(data_y_agesum, (1,0,2,3,4))
         # add random-walk noise to target
         if self.add_noise:
@@ -2051,7 +2051,7 @@ class Dataset_KGML(Dataset):
             if self.set_type == 0:
                 data_x = data_x[idx_train] # (N, age, 1, 336, 136)        
                 data_y = data_y[idx_train] # (N, age, 1, 337, 10)   
-                data_y_agesum = data_y_agesum[idx_train] # (N, 1, 337, 10) or (N, 1, 337)
+                data_y_agesum = data_y_agesum[idx_train] # (N, 1, 337, *) or (N, 1, 337)
 
 
                 AgeWeight = AgeWeight[idx_train] # (N, age)
@@ -2071,7 +2071,7 @@ class Dataset_KGML(Dataset):
 
        
         # if self.stage == 'pretrain':    
-        self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2], data_y_agesum.shape[3]) # (N, 1, 337, 10) to (-1, 337, 10)
+        self.data_y_agesum = data_y_agesum.reshape(-1, data_y_agesum.shape[2], data_y_agesum.shape[3]) # (N, 1, 337, *) to (-1, 337, *)
 
         
         self.AgeWeight = AgeWeight # (N, age)
