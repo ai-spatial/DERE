@@ -44,7 +44,7 @@ datafolder = './data/ED/'
 
 
 
-net = '6networks'
+net = 'networks'
 # for net in networks: 
 for varname in ["gpp","nee", "reco"]: 
     if varname == "all":
@@ -64,8 +64,8 @@ for varname in ["gpp","nee", "reco"]:
 
 
     STAT_PATH = datafolder + 'data_stats_with_NEE_Ra_RECO.npz'
-    DATA_PATH = datafolder + f'pft_dataset_12mean_4types_28years_ESACCI_plusAW_insituless_update_{net}.npz'
-    X_PATH    = datafolder + f'res_train4_test8_extract_4types_28years_insituless_update_{net}_with_NEE_Ra_RECO.npz'
+    DATA_PATH = datafolder + f'pft_dataset_12mean_4types_28years_ESACCI_plusAW_{net}.npz'
+    X_PATH    = datafolder + f'res_train4_test8_extract_4types_28years_{net}_with_NEE_Ra_RECO.npz'
 
 
     train_loader, valid_loader, test_loader, pre_loader, scaler, mean_scaler = get_dataloader(
