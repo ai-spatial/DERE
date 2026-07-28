@@ -73,7 +73,7 @@ Exp = Exp_addPure_finetune_mixdata_insitu_ShareStructure_imputation
 
 
 for ii in range(args.itr):
-    networks = [ "above","ameriflux", "fluxnet", "icos-ww", "mix"]
+    networks = [ "above","ameriflux", "fluxnet", "icos-ww", "multiple"]
     for net in networks:
 
         args.data_path = f'res_train4_test8_extract_4types_28years_{net}.npz' # data file
