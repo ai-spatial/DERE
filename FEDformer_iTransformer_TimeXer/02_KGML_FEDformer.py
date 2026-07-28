@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
             
 
-    networks = ['above', "ameriflux", "fluxnet", "icos-ww", "mix"]
+    networks = ['above', "ameriflux", "fluxnet", "icos-ww", "multiple"]
     for net in networks:
         args.root_path = './data/ED/'
         # args.data_path = 'electricity.csv'
