@@ -109,7 +109,7 @@ if __name__ == '__main__':
     Exp = Exp_Long_Term_Forecast
 
 
-    networks = ['above', "ameriflux", "fluxnet", "icos-ww", "mix"]
+    networks = ['above', "ameriflux", "fluxnet", "icos-ww", "multiple"]
     for net in networks:
         args.data_path = f'res_train4_test8_extract_4types_28years_{net}.npz' # data file
         args.pft_path = f'pft_dataset_12mean_4types_28years_ESACCI_plusAW_{net}.npz' # pft file
