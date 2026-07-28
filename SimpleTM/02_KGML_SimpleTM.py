@@ -152,7 +152,7 @@ if __name__ == '__main__':
             torch.cuda.empty_cache()
 
             
-    networks = ['above', "ameriflux", "fluxnet", "icos-ww", "mix"]
+    networks = ['above', "ameriflux", "fluxnet", "icos-ww", "multiple"]
     for net in networks:
         # args.data_path = 'electricity.csv'
         args.data_path = f'res_train4_test8_extract_4types_28years_{net}.npz' # data file
