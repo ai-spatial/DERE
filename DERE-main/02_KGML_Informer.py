@@ -89,7 +89,7 @@ for ii in range(args.itr):
     exp.test(setting= setting, stage='pretrain', paras='')
 
 
-    networks = ['above',"ameriflux", "fluxnet", "icos-ww", "mix"]
+    networks = ['above',"ameriflux", "fluxnet", "icos-ww", "multiple"]
     for net in networks:
         
         setting = '{}_{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_KGML_{}_{}'.format(args.model, args.data, 
