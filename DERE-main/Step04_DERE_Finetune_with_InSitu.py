@@ -73,7 +73,7 @@ Exp = Exp_ED_addPure_finetune_mixdata_insitu_ShareStructure
 
 for ii in range(args.itr):
     # set experiments
-    networks = ["above","ameriflux", "fluxnet","icos-ww", "mix"]
+    networks = ["above","ameriflux", "fluxnet","icos-ww", "multiple"]
     for net in networks:
         args.data_path = f'res_train4_test8_extract_4types_28years_{net}.npz' # data file
         args.pft_path = f'pft_dataset_12mean_4types_28years_ESACCI_plusAW_{net}.npz' # pft file
