@@ -3,6 +3,9 @@
 Code for the accepted paper at the KDD AI4Science Track:
 > **Knowledge-Guided Learning for Global Carbon Flux Prediction: Integrating High-Level Remote Sensing with Bottom-Up Physical Modeling**
 
+[![Dataset](https://img.shields.io/badge/Hugging%20Face-DERE-yellow)](https://huggingface.co/datasets/ai-spatial/DERE)
+
+
 DERE is a knowledge-guided learning framework for global carbon flux prediction. It integrates process-based model simulations, high-level remote sensing observations, and in-situ flux measurements to predict carbon flux variables, including **GPP**, **RECO**, and **NEE**.
 
 ## 🧩 Overview
@@ -122,11 +125,23 @@ SimpleTM/02_KGML_SimpleTM.py
 
 ## 📊 Data
 
-The experiments use publicly available data sources, including in-situ carbon flux observations, process-based model simulations, and remote-sensing-derived plant functional type labels.
+The processed DERE research dataset is publicly available on Hugging Face:
 
-The in-situ flux observations are based on public carbon flux benchmark datasets such as CarbonSense. The process-based model data include input conditions and simulation outputs from CarbonGlobe. The high-level remote sensing labels are derived from ESA CCI plant functional type products.
+**Dataset:** https://huggingface.co/datasets/ai-spatial/DERE
 
-Due to data size and data-sharing considerations, processed datasets are not included in this repository. Please refer to the paper for detailed data sources, preprocessing procedures, and citations. Before running the experiments, please update the default data paths in the scripts, such as `Dataset/DeepED_dataset`, according to your local data location.
+The release contains the multidimensional arrays and metadata used in this work, including:
+
+- global ED simulation inputs and outputs
+- age-specific ED plant functional type fractions
+- ESA CCI plant functional type observations
+- LiDAR-derived forest-age weights
+- in-situ GPP, RECO, and NEE observations
+- fixed training and testing splits
+- feature and target definitions
+- normalization statistics
+- source and licensing information
+
+Detailed array dimensions, metadata, and source information are provided in the dataset repository.
 
 ## 📚 Citation
 
