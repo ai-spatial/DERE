@@ -5,6 +5,8 @@ Code for the accepted paper at the KDD AI4Science Track:
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21728179.svg)](https://doi.org/10.5281/zenodo.21728179)
 
+**Dataset DOI:** [10.5281/zenodo.21728179](https://doi.org/10.5281/zenodo.21728179)
+
 
 DERE is a knowledge-guided learning framework for global carbon flux prediction. It integrates process-based model simulations, high-level remote sensing observations, and in-situ flux measurements to predict carbon flux variables, including **GPP**, **RECO**, and **NEE**.
 
